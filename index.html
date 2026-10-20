@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ماشین‌حساب من</title>
+<style>
+  body { display:flex; justify-content:center; align-items:center; min-height:100vh; margin:0; background:#1e1e2e; font-family:sans-serif; }
+  .calc { background:#2a2a3c; padding:20px; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.5); width:300px; }
+  .display { background:#111; color:#0f0; font-size:2rem; text-align:left; padding:15px; border-radius:10px; margin-bottom:15px; min-height:50px; overflow-x:auto; direction:ltr; }
+  .buttons { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  button { padding:18px; font-size:1.2rem; border:none; border-radius:10px; background:#3a3a52; color:#fff; cursor:pointer; transition:0.2s; }
+  button:hover { background:#4a4a6a; }
+  .op { background:#ff9500; } .op:hover { background:#ffad33; }
+  .eq { background:#28a745; grid-column:span 2; } .eq:hover { background:#34c759; }
+  .clear { background:#dc3545; } .clear:hover { background:#e4606d; }
+</style>
+</head>
+<body>
+  <div class="calc">
+    <div class="display" id="display">0</div>
+    <div class="buttons">
+      <button class="clear" onclick="clearAll()">C</button>
+      <button onclick="del()">⌫</button>
+      <button class="op" onclick="op('/')">÷</button>
+      <button class="op" onclick="op('*')">×</button>
+      <button onclick="num('7')">7</button><button onclick="num('8')">8</button><button onclick="num('9')">9</button><button class="op" onclick="op('-')">−</button>
+      <button onclick="num('4')">4</button><button onclick="num('5')">5</button><button onclick="num('6')">6</button><button class="op" onclick="op('+')">+</button>
+      <button onclick="num('1')">1</button><button onclick="num('2')">2</button><button onclick="num('3')">3</button><button class="eq" onclick="equal()">=</button>
+      <button onclick="num('0')" style="grid-column:span 2;">0</button><button onclick="num('.')">.</button>
+    </div>
+  </div>
+<script>
+  let current='0', previous=null, operator=null, resetNext=false;
+  const display=document.getElementById('display');
+  function update(){ display.textContent=current; }
+  function num(n){ if(resetNext){current='0';resetNext=false;} if(n==='.'&&current.includes('.'))return; if(current==='0'&&n!=='.')current=n; else current+=n; update(); }
+  function op(o){ if(operator&&!resetNext)equal(); previous=parseFloat(current); operator=o; resetNext=true; }
+  function equal(){ if(operator===null||previous===null)return; const b=parseFloat(current); let r; switch(operator){case '+':r=previous+b;break;case '-':r=previous-b;break;case '*':r=previous*b;break;case '/':r=b===0?'خطا':previous/b;break;} current=String(r); operator=null; previous=null; resetNext=true; update(); }
+  function clearAll(){ current='0';previous=null;operator=null;resetNext=false;update(); }
+  function del(){ current=current.length>1?current.slice(0,-1):'0'; update(); }
+  document.addEventListener('keydown',e=>{ if(e.key>='0'&&e.key<='9')num(e.key); else if(e.key==='.')num('.'); else if('+-*/'.includes(e.key))op(e.key); else if(e.key==='Enter'||e.key==='=')equal(); else if(e.key==='Backspace')del(); else if(e.key==='Escape')clearAll(); });
+</script>
+</body>
+</html>
